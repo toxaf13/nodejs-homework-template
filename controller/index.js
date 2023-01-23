@@ -94,18 +94,34 @@ const deleteContact = async (req, res, next) => {
   }
 };
 
-//const updateStatus = async (req, res, next) => {
-//   const { id } = req.params;
-//   try {
+const updateStatus = async (req, res, next) => {
+   const { id } = req.params;
+   const { favorite } = req.body;
+  
+   try {
+      if (favorite === null ) return res.status(400).json({ message: "missing field favorite" });
+      const { results } = await service.updateContactStatus(id, req.body);
 
-//   }
-//}
+      if (!results) return res.status(404).json({ message: "Not found +" });
+      if (results) 
+         return res.json({
+            status: 'success',
+            code: 200,
+            data: {tasks: results},
+         }) 
+   }catch (e) {
+         console.error(e.message);
+         next(e);
+      }
+}
 
 module.exports = {
    get,
    getById,
    addContact,
    updateContact,
-   deleteContact
+   deleteContact,
+   updateStatus
+
    
 };

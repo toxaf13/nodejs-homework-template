@@ -10,7 +10,7 @@ router.post('/', ctrlTask.addContact);
 
 router.put('/:id', ctrlTask.updateContact);
 
-//router.patch('/:id/status', ctrlTask.updateStatus);
+router.patch('/:id/status', ctrlTask.updateStatus);
 
 router.delete('/:id', ctrlTask.deleteContact);
 

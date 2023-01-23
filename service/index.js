@@ -8,7 +8,7 @@ const getContactById = id => {
   return Contact.findOne({ _id: id });
 };
 
-const createContact = (body) => {
+const createContact = ( body ) => {
   return Contact.create(body);
 };
 
@@ -16,14 +16,17 @@ const updateContact = (id, fields) => {
   return Contact.findByIdAndUpdate({ _id: id }, fields, { new: true });
 };
 
-const removeContact = id => {
+const removeContact = ( id ) => {
   return Contact.findByIdAndRemove({ _id: id });
 };
-   
+const updateContactStatus = ( { _id: id }, body ) => {
+   return Contact.findByIdAndUpdate(id, body, { new: true });
+   }
 module.exports = {
   getAllcontacts,
   getContactById,
   createContact,
   updateContact,
-  removeContact,
+   removeContact,
+  updateContactStatus
 };
