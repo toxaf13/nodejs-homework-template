@@ -100,7 +100,7 @@ const updateStatus = async (req, res, next) => {
   
    try {
       if (favorite === null ) return res.status(400).json({ message: "missing field favorite" });
-      const { results } = await service.updateContactStatus(id, req.body);
+      const  results  = await service.updateContactStatus(id, req.body);
 
       if (!results) return res.status(404).json({ message: "Not found +" });
       if (results) 
