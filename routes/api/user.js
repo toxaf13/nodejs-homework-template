@@ -101,19 +101,6 @@ router.get("/current", async (req, res, next) => {
 
 })
 
-
-
-router.get("/list", auth, (req, res, next) => {
-  const { username } = req.user;
-  res.json({
-    status: "success",
-    code: 200,
-    data: {
-      message: `Authorization was successful: ${username}`,
-    },
-  });
-});
-
 router.get("/", async (req, res, next) => {
    try {
       const result = await User.find();
@@ -123,9 +110,9 @@ router.get("/", async (req, res, next) => {
    }
 })
 
-
 router.patch("/", auth, async (req, res, next) => {
    try {
+      const { subscription } = req.body;
       const user = await User.findOne({ _token: req.body.token });
       if (!user) return res.status(401).json({ message: "Not Authorized" });
       const newUser = await User.findByIdAndUpdate(user.id, { subscription });
