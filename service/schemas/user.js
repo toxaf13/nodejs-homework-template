@@ -5,26 +5,27 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
+   email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
    },
    password: {
-    type: String,
-    required: [true, 'Password is required'],
-  },
-  subscription: {
-    type: String,
-    enum: ["starter", "pro", "business"],
-    default: "starter"
-  },
-  token: {
-    type: String,
-    default: null,
-  },
-},{ versionKey: false, timestamp: true }
-)
+      type: String,
+      required: [true, 'Password is required'],
+   },
+   subscription: {
+      type: String,
+      enum: ["starter", "pro", "business"],
+      default: "starter"
+   },
+   token: {
+      type: String,
+      default: null,
+   },
+   avatarURL : { type: String },
+}, { versionKey: false, timestamp: true }
+);
 
 userSchema.methods.setPassword = function(password) {
   this.password = bCrypt.hashSync(password, bCrypt.genSaltSync(6));

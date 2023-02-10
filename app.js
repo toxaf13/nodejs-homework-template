@@ -1,6 +1,7 @@
-const express = require('express')
-const logger = require('morgan')
-const cors = require('cors')
+const express = require('express');
+const logger = require('morgan');
+const cors = require('cors');
+const path = require("path");
 
 const contactsRouter = require('./routes/api/contacts');
 const usersRouter = require("./routes/api/users");
@@ -16,7 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/contacts', contactsRouter);
 app.use('/api/user', usersRouter);
-
+app.use(
+   "/avatars", express.static(path.join(process.cwd(), "public", "avatars"))) ;
+   
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found (error App.js)' })
 })

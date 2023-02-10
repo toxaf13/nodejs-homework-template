@@ -29,7 +29,6 @@ passport.use(
 
 const auth = (req, res, next) => {
    passport.authenticate('jwt', { session: false }, (error, user) => {
-      console.log(req.headers)
      if (!user || error) {
       return res.status(401).json({
         status: 'error',
