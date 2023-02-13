@@ -6,11 +6,12 @@ require("dotenv").config();
 const secret = process.env.SECRET;
 const { auth } = require("../../config/passport");
 const { upload, storeImage } = require("../../config/upload");
-const service = require("../../service/users");
 const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
 const { editorPic } = require("../../config/edit");
+const { v4: uuidv4 } = require("uuid");
+const { sendEmail } = require("../../service/sendMail");
 
 //////////Registration//////////
 router.post("/registration", async (req, res, next) => {
@@ -24,13 +25,14 @@ router.post("/registration", async (req, res, next) => {
       message: "Email is already in use",
       data: "Conflict",
     });
-  }
+   }
+   const idToken = uuidv4();
    try {
       const fileName = gravatar.url(email, { s: "250", d: "mp" });
-      const newUser = new User({ email, fileName });
-      
+      const newUser = new User({ email, fileName, verificationToken:idToken });
     newUser.setPassword(password);
-    await newUser.save();
+      await newUser.save();
+      await sendEmail(email, idToken);
     res.status(201).json({
       status: "success",
        user: {
@@ -91,7 +93,7 @@ router.get("/logout",async (req, res, next) => {
 })
 //////////Current//////////
 router.get("/current", auth, async (req, res, next) => {
-   const user = await service.getUser({ token: req.user.token })
+   const user = await User.findOne({token: req.user.token})
    try {
       //const user = await User.findOne({_token: user.token});
       
@@ -143,5 +145,34 @@ router.patch("/avatars", upload.single("avatar"),auth,  async(req, res, next) =>
     return next(err);
   }
 
-} )
+})
+
+router.get("/verify/:verificationToken", async (req, res, next) => {
+   const { verificationToken } = req.params;
+   const user = await User.findOne({ verificationToken });
+   try {
+      if (!user) return res.statusMessage(404).json({message: "User not found"});
+      await User.findByIdAndUpdate(
+         user.id, { verify: true, verificationToken: null }
+      );
+res.status(200).json({ message: "Verification successfull" });
+   } catch (error) {
+      next(error);
+   }
+});
+
+router.post("/verify", async (req, res, next) => {
+   const { email } = req.body;
+   const user = await User.findOne({ email });
+   try {
+      if (!email || !user) return res.status(400).json({ message: "missing required field email" })
+      await sendEmail(email, user.verificationToken);
+      res.status(200).json({ message: "Verification email sent" });
+   } catch (error) {
+      next(error);
+   }
+
+})
+
+
 module.exports = router;
